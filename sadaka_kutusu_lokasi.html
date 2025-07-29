@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Sadaka Kutusu Lokasi</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fdfdfc;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      color: #6d5f43;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .row span {
+      color: #888;
+      font-size: 13px;
+    }
+    .row strong {
+      font-size: 14px;
+    }
+    .row a {
+      background: #a1875a;
+      color: #fff;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>SADAKA KUTUSU LİSTESİ</h2>
+  <input type="text" id="search" placeholder="Cari lokasi...🔍">
+  <div id="lokasi-list"></div>
+
+  <script>
+    const sheetURL = 'https://script.google.com/macros/s/AKfycby1NAEVwxx7DMpSb1v3kPHQdACFd6gwgDKt00P_VARYwswuBQ4cT5NHkdRTr4p0oLMhJA/exec';
+    let lokasiData = [];
+
+    function renderList(data) {
+      const container = document.getElementById('lokasi-list');
+      container.innerHTML = '';
+      data.forEach((item, index) => {
+        const row = document.createElement('div');
+        row.className = 'row';
+
+        const text = document.createElement('div');
+        text.style.flex = '1';
+        text.innerHTML = `<span>${index + 1}.</span> <strong>${item.nama}</strong>`;
+
+        const btn = document.createElement('a');
+        btn.href = item.link;
+        btn.textContent = 'MAPS';
+        btn.target = '_blank';
+
+        row.appendChild(text);
+        row.appendChild(btn);
+        container.appendChild(row);
+      });
+    }
+
+    fetch(sheetURL)
+      .then(res => res.json())
+      .then(data => {
+        lokasiData = data;
+        renderList(lokasiData);
+      });
+
+    document.getElementById('search').addEventListener('input', function(e) {
+      const keyword = e.target.value.toLowerCase();
+      const filtered = lokasiData.filter(item => item.nama.toLowerCase().includes(keyword));
+      renderList(filtered);
+    });
+  </script>
+</body>
+</html>
