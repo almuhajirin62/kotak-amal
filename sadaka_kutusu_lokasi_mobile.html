@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -61,7 +60,12 @@
     .lokasi-btn:hover {
       background-color: #8c744f;
     }
-
+    .loading {
+      text-align: center;
+      padding: 20px;
+      font-size: 16px;
+      color: #777;
+    }
     @media (max-width: 600px) {
       .lokasi-text {
         font-size: 14px;
@@ -76,15 +80,21 @@
 <body>
   <h2>Daftar Lokasi Sadaka Kutusu</h2>
   <input type="text" id="search" placeholder="Cari lokasi... 🔍" />
-  <div id="lokasi-list"></div>
+  <div id="lokasi-list">
+    <div class="loading">Memuat data lokasi...</div>
+  </div>
 
-  <script>
+  <script defer>
     const sheetURL = 'https://script.google.com/macros/s/AKfycbx_CAvuInVBpwL_Us0nHrBL7nJ4ALl5eTleHdTR92byXX8pEaa2FVqMaQhOjWklbltBXw/exec';
     let lokasiData = [];
 
     function renderList(data) {
       const container = document.getElementById('lokasi-list');
       container.innerHTML = '';
+      if (data.length === 0) {
+        container.innerHTML = '<div class="loading">Tidak ada data lokasi</div>';
+        return;
+      }
       data.forEach((item, index) => {
         const row = document.createElement('div');
         row.className = 'lokasi-item';
@@ -105,16 +115,24 @@
       });
     }
 
+    // Load data dari Google Sheets
     fetch(sheetURL)
       .then(res => res.json())
       .then(data => {
         lokasiData = data;
         renderList(lokasiData);
+      })
+      .catch(() => {
+        document.getElementById('lokasi-list').innerHTML =
+          '<div class="loading">Gagal memuat data</div>';
       });
 
+    // Fitur pencarian
     document.getElementById('search').addEventListener('input', function (e) {
       const keyword = e.target.value.toLowerCase();
-      const filtered = lokasiData.filter(item => item.nama.toLowerCase().includes(keyword));
+      const filtered = lokasiData.filter(item =>
+        item.nama.toLowerCase().includes(keyword)
+      );
       renderList(filtered);
     });
   </script>
